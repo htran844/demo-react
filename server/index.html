@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <form enctype="multipart/form-data">
+        <h2 class="title-header">Thêm sản phẩm</h2>
+    
+        <label for="product-name">Tên sản phẩm</label>
+        <input
+            type="text"
+            placeholder="Tên sản phẩm"
+            name="title"
+            id="product-title"
+            required
+        />
+    
+        <div class="row mb-1 d-flex align-items-center">
+            <div class="col-4">
+                <label for="product-cost">Code sản phẩm</label>
+                <input
+                    type="text"
+                    placeholder="Code sản phẩm"
+                    name="code"
+                    id="product-code"
+                    required
+                />
+            </div>
+            <div class="col-4">
+                <label for="product-cost">Giá sản phẩm</label>
+                <input
+                    type="number"
+                    placeholder="Giá sản phẩm"
+                    name="price"
+                    id="product-price"
+                    required
+                />
+            </div>
+            <div class="col-4">
+                <label for="product-cost">slug sản phẩm</label>
+                <input
+                    type="text"
+                    placeholder="slug sản phẩm"
+                    name="slug"
+                    id="product-slug"
+                    required
+                />
+            </div>
+            <div class="col-4">
+                <label for="product-total">Màu sản phẩm</label>
+                <input
+                    type="checkbox"
+                    name="color"
+                    value="red"
+                   
+                /> đỏ
+                <input
+                    type="checkbox"
+                    name="color"
+                    value="black"
+                   
+                /> đen
+                <input
+                    type="checkbox"
+                    name="color"
+                    value="yellow"
+                    
+                /> vàng
+            </div>
+            <div class="col-4">
+                <label for="product-total">Size sản phẩm</label>
+                <input
+                    type="checkbox"
+                    name="size"
+                    value="35"
+                    
+                /> 35
+                <input
+                    type="checkbox"
+                    name="size"
+                    value="36"
+                    
+                /> 36
+                <input
+                    type="checkbox"
+                    name="size"
+                    value="37"
+                   
+                /> 37
+            </div>
+        </div>
+    
+        
+        <div class="input-images mt-5">
+            <label for="product-images">
+                Thêm ảnh cho sản phẩm
+            </label>
+            <input
+                hidden
+                type="file"
+                multiple
+                accept=".jpg, .jpeg, .png"
+                id="product-images"
+                name="images"
+            />
+            <div class="preview-images d-flex flex-wrap"></div>
+        </div>
+    
+        <button type="submit" class="add-product-button">Thêm</button>
+    </form>
+    <script>
+        const form = document.querySelector('form')
+        const formData = new FormData(form)
+        $('#product-images').on('change', function () {
+        let files = this.files
+        // console.log(files)
+        if (files.length == 0) return
+
+        const previewImages = $('.preview-images')
+
+        previewImages.empty()
+        formData.delete('images')
+
+        for (let i = 0; i < files.length; i++) {
+            // $('<img />', {
+            //     src: URL.createObjectURL(files[i]),
+            // }).appendTo(previewImages)
+
+            // append img to formData
+            formData.append('images', files[i])
+        }
+    })
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault()
+
+            const title = document.querySelector('#product-title')
+            const code = document.querySelector('#product-code')
+            const price = document.querySelector('#product-price')
+            const slug = document.querySelector('#product-slug')
+            var checkboxColor = document.getElementsByName('color');
+            var color = [];
+                for (var i = 0; i < checkboxColor.length; i++){
+                    if (checkboxColor[i].checked === true){
+                        color.push(checkboxColor[i].value)
+                    }
+                }
+            var checkboxSize = document.getElementsByName('size');
+            var size = [];
+            for (var i = 0; i < checkboxSize.length; i++){
+                if (checkboxSize[i].checked === true){
+                     size.push(checkboxSize[i].value)
+                }
+            }
+            formData.set('title', title.value)
+            formData.set('code', code.value)
+            formData.set('price', price.value)
+            formData.set('slug', slug.value)
+            formData.set('color', color)
+            formData.set('size', size)
+            console.log(formData)
+            let response = await fetch('/api', {
+                method: 'POST',
+                body: formData,
+
+            })
+            if (response.status == 200) {
+                alert('Thêm sản phẩm thành công')
+            }
+        })
+    </script>
+</body>
+</html>
